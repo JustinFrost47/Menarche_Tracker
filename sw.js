@@ -6,11 +6,11 @@ const CACHE_NAME = `period-tracker-${VERSION}`;
 
 // The static resources that the app needs to function.
 const APP_STATIC_RESOURCES = [
-  "/",
-  "/index.html",
-  "/script.js",
-  "/style.css",
-  "/icons/wheel.svg",
+  "/Menarche_Tracker/",
+  "/Menarche_Tracker/index.html",
+  "/Menarche_Tracker/script.js",
+  "/Menarche_Tracker/style.css",
+  "/Menarche_Tracker/icons/wheel.svg",
 ];
 
 // On install, cache the static resources
