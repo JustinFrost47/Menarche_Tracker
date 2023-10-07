@@ -19,7 +19,7 @@ self.addEventListener("install", (event) => {
     (async () => {
       const cache = await caches.open(CACHE_NAME);
       cache.addAll(APP_STATIC_RESOURCES);
-      console("installed caches")
+      console.log("installed caches")
     })()
   );
 });
