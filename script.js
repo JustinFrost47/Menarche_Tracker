@@ -7,7 +7,7 @@ const pastPeriodContainer = document.getElementById("past-periods");
 const STORAGE_KEY = "period-tracker";
 
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("sw.js").then(
+  navigator.serviceWorker.register("/sw.js").then(
     (registration) => {
       console.log("Service worker registration successful:", registration);
     },
