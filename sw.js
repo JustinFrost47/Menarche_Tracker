@@ -13,15 +13,22 @@ const APP_STATIC_RESOURCES = [
   "/icons/wheel.svg",
 ];
 
+// On install, cache the static resources
 self.addEventListener("install", (event) => {
   event.waitUntil(
     (async () => {
-      const cache = await caches.open(CACHE_NAME);
-      await cache.addAll(APP_STATIC_RESOURCES);
+      try {
+        const cache = await caches.open(CACHE_NAME);
+        await cache.addAll(APP_STATIC_RESOURCES);
+        console.log('Static resources cached successfully.');
+      } catch (error) {
+        console.error('Cache installation error:', error);
+      }
     })()
   );
 });
 
+// delete old caches on activate
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     (async () => {
@@ -38,27 +45,30 @@ self.addEventListener("activate", (event) => {
   );
 });
 
+// On fetch, intercept server requests
+// and respond with cached responses instead of going to network
 self.addEventListener("fetch", (event) => {
-  // As a single page app, direct requests to always go to cached home page.
   if (event.request.mode === "navigate" || event.request.method === "GET") {
     event.respondWith(
       caches.match(event.request).then((response) => {
-        // Return the cached response if found, or fetch from the network and cache it.
         return response || fetch(event.request).then((fetchResponse) => {
-          // Cache the fetched response for future use.
           return caches.open(CACHE_NAME).then((cache) => {
             cache.put(event.request, fetchResponse.clone());
             return fetchResponse;
           });
         });
       }).catch((error) => {
-        // Handle errors here, e.g., show a custom offline page.
         console.error("Fetch error:", error);
-        return caches.match("/offline.html"); // You can provide your own offline page.
+        return new Response("Sorry, something went wrong. Please try again later.", {
+          headers: { "Content-Type": "text/plain" },
+        });
       })
     );
     return;
   }
+
+
+
 
   // For all other requests, go to the cache first, and then the network.
   event.respondWith(
