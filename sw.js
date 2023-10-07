@@ -1,5 +1,5 @@
 // The version of the cache.
-const VERSION = "v1.01";
+const VERSION = "v1.011";
 
 // The name of the cache
 const CACHE_NAME = `period-tracker-${VERSION}`;
@@ -19,7 +19,10 @@ self.addEventListener("install", (event) => {
     (async () => {
       try {
         const cache = await caches.open(CACHE_NAME);
-        await cache.addAll(APP_STATIC_RESOURCES);
+        for (const resource of APP_STATIC_RESOURCES) {
+          await cache.add(resource);
+          console.log(`Cached resource: ${resource}`);
+        }
         console.log('Static resources cached successfully.');
       } catch (error) {
         console.error('Cache installation error:', error);
@@ -27,6 +30,7 @@ self.addEventListener("install", (event) => {
     })()
   );
 });
+
 
 // delete old caches on activate
 self.addEventListener("activate", (event) => {
