@@ -56,17 +56,22 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(
       // Try to serve the cached HTML page for navigation requests.
       caches.match(event.request).then((response) => {
-        return response || fetch(event.request).then((fetchResponse) => {
-          // Cache the fetched response for future use.
+        if (response) {
+          return response;
+        }
+      
+        return fetch(event.request).then((fetchResponse) => {
+          // Clone the response before doing anything that reads its body.
+          const clonedResponse = fetchResponse.clone();
+      
           caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, fetchResponse.clone());
+            cache.put(event.request, clonedResponse);
           });
+      
           return fetchResponse;
-        }).catch(() => {
-          // If fetching from network fails, return the cached HTML page.
-          return caches.match("/");
         });
       })
+      
     );
     return;
   }
