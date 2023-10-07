@@ -8,8 +8,8 @@ const CACHE_NAME = `period-tracker-${VERSION}`;
 const APP_STATIC_RESOURCES = [
   "/",
   "/index.html",
-  "/app.js",
-  "/styles.css",
+  "/script.js",
+  "/style.css",
   "/icons/wheel.svg",
 ];
 
