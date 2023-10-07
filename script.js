@@ -6,6 +6,63 @@ const pastPeriodContainer = document.getElementById("past-periods");
 // Add the storage key as an app-wide constant
 const STORAGE_KEY = "period-tracker";
 
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("sw.js").then(
+    (registration) => {
+      console.log("Service worker registration successful:", registration);
+    },
+    (error) => {
+      console.error(`Service worker registration failed: ${error}`);
+    },
+  );
+} else {
+  console.error("Service workers are not supported.");
+}
+
+// Check if the browser supports service workers.
+if ('serviceWorker' in navigator && 'PushManager' in window) {
+  navigator.serviceWorker.register('/sw.js').then(function(registration) {
+    console.log('Service Worker registered with scope:', registration.scope);
+  }).catch(function(error) {
+    console.error('Service Worker registration failed:', error);
+  });
+} else {
+  console.error("Service workers are not supported.");
+}
+
+// Check if the app is already installed.
+window.addEventListener('beforeinstallprompt', function(event) {
+  // Prevent the default browser install prompt.
+  event.preventDefault();
+
+  // Show your custom install button.
+  const installButton = document.getElementById('installButton');
+  installButton.style.display = 'block';
+
+  // Save the event for later use.
+  let deferredPrompt = event;
+
+  // Handle the custom install button click.
+  installButton.addEventListener('click', function() {
+    // Show the browser's install prompt.
+    deferredPrompt.prompt();
+
+    // Wait for the user to respond to the prompt.
+    deferredPrompt.userChoice.then(function(choiceResult) {
+      if (choiceResult.outcome === 'accepted') {
+        console.log('User accepted the installation prompt');
+      } else {
+        console.log('User dismissed the installation prompt');
+      }
+
+      // Reset the install button display.
+      installButton.style.display = 'none';
+    });
+
+    // Reset the deferredPrompt.
+    deferredPrompt = null;
+  });
+});
 
 
 // Listen to form submissions.

@@ -26,24 +26,13 @@
         <button type="submit">Add Period</button>
       </p>
     </form>
+
+    <button id="installButton" style="display: none;">Install App</button>
+
     <section id="past-periods"></section>
     <script src="script.js" defer></script>
     
-    <script>
-      if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("sw.js").then(
-      (registration) => {
-        console.log("Service worker registration successful:", registration);
-      },
-      (error) => {
-        console.error(`Service worker registration failed: ${error}`);
-      },
-    );
-  } else {
-    console.error("Service workers are not supported.");
-  }
-  
-    </script>
+
   
   </body>
   
