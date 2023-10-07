@@ -6,6 +6,8 @@ const pastPeriodContainer = document.getElementById("past-periods");
 // Add the storage key as an app-wide constant
 const STORAGE_KEY = "period-tracker";
 
+
+
 // Listen to form submissions.
 newPeriodFormEl.addEventListener("submit", (event) => {
   event.preventDefault();
