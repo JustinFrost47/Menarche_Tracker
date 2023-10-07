@@ -6,17 +6,29 @@ const pastPeriodContainer = document.getElementById("past-periods");
 // Add the storage key as an app-wide constant
 const STORAGE_KEY = "period-tracker";
 
-
-// Check if the browser supports service workers.
-if ('serviceWorker' in navigator && 'PushManager' in window) {
-  navigator.serviceWorker.register('/sw.js').then(function(registration) {
-    console.log('Service Worker registered with scope:', registration.scope);
-  }).catch(function(error) {
-    console.error('Service Worker registration failed:', error);
-  });
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/sw.js").then(
+    (registration) => {
+      console.log("Service worker registration successful:", registration);
+    },
+    (error) => {
+      console.error(`Service worker registration failed: ${error}`);
+    },
+  );
 } else {
   console.error("Service workers are not supported.");
 }
+
+// Check if the browser supports service workers.
+// if ('serviceWorker' in navigator && 'PushManager' in window) {
+//   navigator.serviceWorker.register('/sw.js').then(function(registration) {
+//     console.log('Service Worker registered with scope:', registration.scope);
+//   }).catch(function(error) {
+//     console.error('Service Worker registration failed:', error);
+//   });
+// } else {
+//   console.error("Service workers are not supported.");
+// }
 
 // Check if the app is already installed.
 window.addEventListener('beforeinstallprompt', function(event) {
