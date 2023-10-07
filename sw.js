@@ -1,5 +1,5 @@
 // The version of the cache.
-const VERSION = "v1.011";
+const VERSION = "v1";
 
 // The name of the cache
 const CACHE_NAME = `period-tracker-${VERSION}`;
@@ -17,20 +17,11 @@ const APP_STATIC_RESOURCES = [
 self.addEventListener("install", (event) => {
   event.waitUntil(
     (async () => {
-      try {
-        const cache = await caches.open(CACHE_NAME);
-        for (const resource of APP_STATIC_RESOURCES) {
-          await cache.add(resource);
-          console.log(`Cached resource: ${resource}`);
-        }
-        console.log('Static resources cached successfully.');
-      } catch (error) {
-        console.error('Cache installation error:', error);
-      }
+      const cache = await caches.open(CACHE_NAME);
+      cache.addAll(APP_STATIC_RESOURCES);
     })()
   );
 });
-
 
 // delete old caches on activate
 self.addEventListener("activate", (event) => {
@@ -52,44 +43,23 @@ self.addEventListener("activate", (event) => {
 // On fetch, intercept server requests
 // and respond with cached responses instead of going to network
 self.addEventListener("fetch", (event) => {
+  // As a single page app, direct app to always go to cached home page.
   if (event.request.mode === "navigate") {
-    event.respondWith(
-      // Try to serve the cached HTML page for navigation requests.
-      caches.match(event.request).then((response) => {
-        if (response) {
-          return response;
-        }
-      
-        return fetch(event.request).then((fetchResponse) => {
-          // Clone the response before doing anything that reads its body.
-          const clonedResponse = fetchResponse.clone();
-      
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, clonedResponse);
-          });
-      
-          return fetchResponse;
-        });
-      })
-      
-    );
+    event.respondWith(caches.match("/"));
     return;
   }
 
-  if (event.request.method === "GET") {
-    event.respondWith(
-      caches.match(event.request).then((response) => {
-        return response || fetch(event.request).then((fetchResponse) => {
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, fetchResponse.clone());
-          });
-          return fetchResponse;
-        });
-      }).catch(() => {
-        // For other requests (e.g., images, scripts), serve from cache if available.
-        return new Response(null, { status: 404 });
-      })
-    );
-    return;
-  }
+  // For all other requests, go to the cache first, and then the network.
+  event.respondWith(
+    (async () => {
+      const cache = await caches.open(CACHE_NAME);
+      const cachedResponse = await cache.match(event.request);
+      if (cachedResponse) {
+        // Return the cached response if it's available.
+        return cachedResponse;
+      }
+      // If resource isn't in the cache, return a 404.
+      return new Response(null, { status: 404 });
+    })()
+  );
 });
